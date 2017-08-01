@@ -48,10 +48,14 @@ def fromGPSToAddress(latitude, longitude):
         if HTTP_OK == response.status_code:
             data = json.loads(response.text)
             if len(data["results"]) > 0:
-                result = data["results"][1]["formatted_address"]
+                try:
+                    result = data["results"][1]["formatted_address"]
+                except IndexError:
+                    print("No data for: " + response.text)
+                    POSITIONS[(latitude, longitude)] = result
 
-                #adding Poland in address seams redundant
                 result = result.replace(', Poland', '')
+                result = result.replace('Gmina', '')
 
                 #some times there is a postal code
                 result = result.replace('/', '')
@@ -131,7 +135,7 @@ def main(argv):
 
                 picFileHandle = open(pic.fileNameWithPath, 'rb')
 
-                #print(pic.fileNameWithPath)
+                print(pic.fileNameWithPath)
                 picEXIF = exifread.process_file(picFileHandle, details=False)
 
                 if 'Image DateTime' in picEXIF:
@@ -201,8 +205,12 @@ def main(argv):
 
             # print(pic.fileNameWithPath)
             # print(wholePath)
-            copyfile(pic.fileNameWithPath, wholePath) #copy
-            #os.rename(pic.fileNameWithPath, wholePath) #move
+
+            try:
+                # copyfile(pic.fileNameWithPath, wholePath) #copy
+                os.rename(pic.fileNameWithPath, wholePath)  # move
+            except FileExistsError:
+                print("File :" + wholePath + " already exists!" )
 
     if picCount == picCountCheck:
         print("All pictures (" + str(picCount) + ") found were copied or moved :D")
