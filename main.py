@@ -10,13 +10,14 @@ from collections import defaultdict
 from shutil import copyfile
 
 #const
-PICTURES_SOURCE = "c:\\art"
+PICTURES_SOURCE = "c:\\art\\"
 PICTURES_DESTINATION = "c:\\Destination\\"
 GEOCODE_URL = 'http://maps.googleapis.com/maps/api/geocode/json?latlng='
 HTTP_OK = 200
 HOME = (53.514546, 14.613439)
 HOME_AREA = 35
 OTHER_AREA = 15
+PRINT_DEBUG = False
 
 #variable
 POSITIONS = {}
@@ -28,10 +29,6 @@ class Picture(object):
         self.make = ""
         self.model = ""
         self.address = ""
-        self.latitude = ""
-        self.longitude = ""
-        self.year = ""
-        self.month = ""
 
 def fromGPSToAddress(latitude, longitude):
     result = ""
@@ -57,7 +54,7 @@ def fromGPSToAddress(latitude, longitude):
                 result = result.replace(', Poland', '')
                 result = result.replace('Gmina', '')
 
-                #some times there is a postal code
+                #some times there is a postal code therefore attempt to remove it
                 result = result.replace('/', '')
                 result = result.replace('\\', '')
                 result = result.replace('-', '')
@@ -84,8 +81,7 @@ def fromGPSToAddress(latitude, longitude):
     return result
 
 def fromGPSDataToKey(gpsData):
-    #result = str(gpsData)[0:4] + ", " + calendar.month_name[int(str(gpsData)[5] + str(gpsData)[6])]
-    result = str(gpsData)[0:4] + ", " + str(gpsData)[5] + str(gpsData)[6]
+    result = (str(gpsData)[0:4], str(str(gpsData)[5] + str(gpsData)[6]))
     return result
 
 def convertToDegress(coordinate, direction):
@@ -131,13 +127,16 @@ def main(argv):
 
                 pic = Picture()
                 pic.fileName = filename
-                pic.fileNameWithPath = root + "\\" + filename
+                pic.fileNameWithPath = root + filename
 
                 picFileHandle = open(pic.fileNameWithPath, 'rb')
 
-                print(pic.fileNameWithPath)
+                if PRINT_DEBUG:
+                    print(pic.fileNameWithPath)
+
                 picEXIF = exifread.process_file(picFileHandle, details=False)
 
+                #objectKey is a tupple (year, month)
                 if 'Image DateTime' in picEXIF:
                     objectKey = fromGPSDataToKey(picEXIF['Image DateTime'])
                 elif 'EXIF DateTimeOriginal' in picEXIF:
@@ -146,14 +145,10 @@ def main(argv):
                     objectKey = fromGPSDataToKey(picEXIF['EXIF DateTimeDigitized'])
                 else:
                     picCreationTime = datetime.datetime.fromtimestamp(os.path.getmtime(pic.fileNameWithPath))
-                    #objectKey = str(picCreationTime.year) + ", " + calendar.momonth_name[picCreationTime.month]
                     if picCreationTime.month < 10:
-                        objectKey = str(picCreationTime.year) + ", 0" + str(picCreationTime.month)
+                        objectKey = (str(picCreationTime.year), str("0" + str(picCreationTime.month)))
                     else:
-                        objectKey = str(picCreationTime.year) + ", " + str(picCreationTime.month)
-
-                pic.year = objectKey[0:4]
-                pic.month = objectKey.rsplit(", ",1)[1]
+                        objectKey = (str(picCreationTime.year), str(picCreationTime.month))
 
                 if 'Image Make' in picEXIF and 'Image Model' in picEXIF:
                     pic.make = str(picEXIF['Image Make']).rstrip(' ')
@@ -164,28 +159,24 @@ def main(argv):
                     pic.model = pic.model[0:15].rstrip(' ')
 
                 if 'GPS GPSLatitude' in picEXIF and 'GPS GPSLatitudeRef' in picEXIF and 'GPS GPSLongitude' in picEXIF and 'GPS GPSLongitudeRef' in picEXIF:
-                    pic.latitude = convertToDegress(picEXIF['GPS GPSLatitude'], picEXIF['GPS GPSLatitudeRef'])
-                    pic.longitude = convertToDegress(picEXIF['GPS GPSLongitude'], picEXIF['GPS GPSLongitudeRef'])
-                    picPoint = (pic.latitude, pic.longitude)
+                    latitude = convertToDegress(picEXIF['GPS GPSLatitude'], picEXIF['GPS GPSLatitudeRef'])
+                    longitude = convertToDegress(picEXIF['GPS GPSLongitude'], picEXIF['GPS GPSLongitudeRef'])
+                    picPoint = (latitude, longitude)
                     if vincenty(HOME, picPoint).kilometers > HOME_AREA:
-                        pic.address = fromGPSToAddress(pic.latitude, pic.longitude)
+                        pic.address = fromGPSToAddress(latitude, longitude)
 
                 pictures[objectKey].append(pic)
 
                 picFileHandle.close()
 
-                # for tag in picEXIF.keys():
-                #    if tag not in ('GPS GPSLatitudeRef'):
-                #         print("     Key: %s: %s" % (tag, picEXIF[tag]))
-
     for objectKey, picList in pictures.items():
         pic = picList[0]
 
         newPath = PICTURES_DESTINATION
-        newPath = newPath + pic.year + "\\" + pic.month
+        newPath = newPath + objectKey[0] + "\\" + objectKey[1]
         combainedAddresses = ""
 
-        #iterate for the first time to get all addresses
+        #iterate for the first time to get all addresses in one string
         for i, pic in enumerate(picList):
             if pic.address != "" and pic.address not in combainedAddresses:
                 combainedAddresses = combainedAddresses + " " + pic.address
@@ -195,20 +186,24 @@ def main(argv):
 
         for i, pic in enumerate(picList):
             picCountCheck = picCountCheck + 1
+
             wholePath = newPath
+
             if pic.make != "" or pic.model != "":
                 wholePath = wholePath + "\\" + str(pic.make) + " " + str(pic.model)
+
             wholePath = wholePath + "\\" + pic.fileName
 
             if not os.path.exists(os.path.dirname(wholePath)):
                 os.makedirs(os.path.dirname(wholePath))
 
-            # print(pic.fileNameWithPath)
-            # print(wholePath)
+            if PRINT_DEBUG:
+                print(pic.fileNameWithPath)
+                print(wholePath)
 
             try:
-                # copyfile(pic.fileNameWithPath, wholePath) #copy
-                os.rename(pic.fileNameWithPath, wholePath)  # move
+                copyfile(pic.fileNameWithPath, wholePath) #copy
+                #os.rename(pic.fileNameWithPath, wholePath)  # move
             except FileExistsError:
                 print("File :" + wholePath + " already exists!" )
 
