@@ -18,6 +18,8 @@ HOME = (53.514546, 14.613439)
 HOME_AREA = 35
 OTHER_AREA = 15
 PRINT_DEBUG = False
+REMOVE_FROM_ADDRESS = [", Poland", "Gmina", "/", "\\", "-"]
+REMOVE_FROM_MODEL = ["/", "<", ">"]
 
 #variable
 POSITIONS = {}
@@ -51,13 +53,10 @@ def fromGPSToAddress(latitude, longitude):
                     print("No data for: " + response.text)
                     POSITIONS[(latitude, longitude)] = result
 
-                result = result.replace(', Poland', '')
-                result = result.replace('Gmina', '')
+                for remove in REMOVE_FROM_ADDRESS:
+                    result = result.replace(remove, '')
 
                 #some times there is a postal code therefore attempt to remove it
-                result = result.replace('/', '')
-                result = result.replace('\\', '')
-                result = result.replace('-', '')
                 result = ''.join(i for i in result if not i.isdigit())
                 result = result.lstrip(' ')
 
@@ -152,11 +151,10 @@ def main(argv):
 
                 if 'Image Make' in picEXIF and 'Image Model' in picEXIF:
                     pic.make = str(picEXIF['Image Make']).rstrip(' ')
-                    pic.model = picEXIF['Image Model']
-                    pic.model = str(pic.model).replace('/', '')
-                    pic.model = str(pic.model).replace('<', '')
-                    pic.model = str(pic.model).replace('>', '')
-                    pic.model = pic.model[0:15].rstrip(' ')
+                    pic.model = str(picEXIF['Image Model']).rstrip(' ')
+                    pic.model = pic.model[0:15]
+                    for remove in REMOVE_FROM_MODEL:
+                        pic.model = pic.model.replace(remove, '')
 
                 if 'GPS GPSLatitude' in picEXIF and 'GPS GPSLatitudeRef' in picEXIF and 'GPS GPSLongitude' in picEXIF and 'GPS GPSLongitudeRef' in picEXIF:
                     latitude = convertToDegress(picEXIF['GPS GPSLatitude'], picEXIF['GPS GPSLatitudeRef'])
