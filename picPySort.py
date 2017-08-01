@@ -10,8 +10,8 @@ from collections import defaultdict
 from shutil import copyfile
 
 #const
-PICTURES_SOURCE = "c:\\art\\"
-PICTURES_DESTINATION = "c:\\Destination\\"
+PICTURES_SOURCE = "d:\\art\\"
+PICTURES_DESTINATION = "d:\\Destination\\"
 GEOCODE_URL = 'http://maps.googleapis.com/maps/api/geocode/json?latlng='
 HTTP_OK = 200
 HOME = (53.514546, 14.613439)
@@ -120,18 +120,18 @@ def main(argv):
 
     for root, subdirs, files in os.walk(PICTURES_SOURCE):
         for filename in files:
-            if filename[-3:].lower() in {"jpg", "mp4", "avi"}:
+            if filename[-3:].lower() in {"jpg", "mp4", "avi", "3gp"}:
 
                 picCount = picCount + 1
 
                 pic = Picture()
                 pic.fileName = filename
-                pic.fileNameWithPath = root + filename
-
-                picFileHandle = open(pic.fileNameWithPath, 'rb')
+                pic.fileNameWithPath = root + "\\" + filename
 
                 if PRINT_DEBUG:
                     print(pic.fileNameWithPath)
+
+                picFileHandle = open(pic.fileNameWithPath, 'rb')
 
                 picEXIF = exifread.process_file(picFileHandle, details=False)
 
@@ -151,10 +151,11 @@ def main(argv):
 
                 if 'Image Make' in picEXIF and 'Image Model' in picEXIF:
                     pic.make = str(picEXIF['Image Make']).rstrip(' ')
-                    pic.model = str(picEXIF['Image Model']).rstrip(' ')
+                    pic.model = str(picEXIF['Image Model'])
                     pic.model = pic.model[0:15]
                     for remove in REMOVE_FROM_MODEL:
                         pic.model = pic.model.replace(remove, '')
+                    pic.model = pic.model.rstrip(' ')
 
                 if 'GPS GPSLatitude' in picEXIF and 'GPS GPSLatitudeRef' in picEXIF and 'GPS GPSLongitude' in picEXIF and 'GPS GPSLongitudeRef' in picEXIF:
                     latitude = convertToDegress(picEXIF['GPS GPSLatitude'], picEXIF['GPS GPSLatitudeRef'])
@@ -200,8 +201,8 @@ def main(argv):
                 print(wholePath)
 
             try:
-                copyfile(pic.fileNameWithPath, wholePath) #copy
-                #os.rename(pic.fileNameWithPath, wholePath)  # move
+                #copyfile(pic.fileNameWithPath, wholePath) #copy
+                os.rename(pic.fileNameWithPath, wholePath)  # move
             except FileExistsError:
                 print("File :" + wholePath + " already exists!" )
 
