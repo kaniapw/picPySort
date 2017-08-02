@@ -4,7 +4,7 @@ import exifread
 import datetime
 
 #const
-PICTURES_SOURCE = "c:\\art\\"
+PICTURES_SOURCE = "d:\\art\\"
 PRINT_DEBUG = True
 
 

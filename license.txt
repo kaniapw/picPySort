@@ -8,3 +8,5 @@ So work on a copy of the files, then after some validation of the output remove 
 Rule Two
 If you somehow are able to make money out of this then probably I would like to get piece of it ;)
 If it's for your own usage - knock your self out!
+
+Hopefully creating my own license does not render me a redneck ;)
