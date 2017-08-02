@@ -32,7 +32,6 @@ def main(argv):
                 elif 'EXIF DateTimeDigitized' in picEXIF:
                     newFileName = str(picEXIF['EXIF DateTimeDigitized'])
                 else:
-#                    newFileName = time.strftime("%Y %m %d %H %M %S", os.path.getmtime(root + "\\" + fileName))
                     newFileName = datetime.datetime.fromtimestamp(os.path.getmtime(root + "\\" + fileName)).strftime("%Y %m %d %H %M %S")
 
                 fileHandle.close()

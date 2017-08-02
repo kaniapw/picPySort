@@ -25,7 +25,7 @@ How to use it (This is not about how to run a python script)?
 At the beginning of the script there few variables which you should edit.
 PICTURES_SOURCE = "c:\\art\\"									- this should point to where your photos are
 PICTURES_DESTINATION = "c:\\Destination\\"						- this is where they end up sorted
-HOME = (53.514546, 14.613439)									- this latitude and longitude of your home. Why? I don't wont to see my address next to most of the photos
+HOME = (51.406998372, 116.223499106)							- this latitude and longitude of your home. Why? I don't wont to see my address next to most of the photos
 HOME_AREA = 35													- for pictures taken in radius of 35 km from HOME, tags won't be added
 OTHER_AREA = 15													- OTHER_AREA? There is a limit for the geocode translate requests, script won't ask for geocode if it is in within 15 km from known location
 REMOVE_FROM_ADDRESS = [", Poland", "Gmina", "/", "\\", "-"]		- Stuff you won't to leave out from the address, kind of similar to HOME, I  know that majority of my photos were taken in Poland
