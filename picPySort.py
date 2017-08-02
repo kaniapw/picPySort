@@ -10,16 +10,17 @@ from collections import defaultdict
 from shutil import copyfile
 
 #const
-PICTURES_SOURCE = "d:\\art\\"
-PICTURES_DESTINATION = "d:\\Destination\\"
-GEOCODE_URL = 'http://maps.googleapis.com/maps/api/geocode/json?latlng='
-HTTP_OK = 200
+PICTURES_SOURCE = "c:\\art\\"
+PICTURES_DESTINATION = "c:\\Destination\\"
 HOME = (53.514546, 14.613439)
 HOME_AREA = 35
 OTHER_AREA = 15
-PRINT_DEBUG = False
 REMOVE_FROM_ADDRESS = [", Poland", "Gmina", "/", "\\", "-"]
 REMOVE_FROM_MODEL = ["/", "<", ">"]
+
+GEOCODE_URL = 'http://maps.googleapis.com/maps/api/geocode/json?latlng='
+HTTP_OK = 200
+PRINT_DEBUG = False
 
 #variable
 POSITIONS = {}
