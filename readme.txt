@@ -3,11 +3,11 @@ picPySort
 Goal of this tool is to sort/organize photos on the disk in folders named after date and place where the photo was taken, if EXIF of a file contains such information.
 
 Example: 
-For the picture taken in May, in Berlin in the vicinity of Tiergarten. 
-PICTURES_DESTINATION\2009\LGE Nexus 5\05 - Tiergarten, Berlin, Germany\myPhoto.jpg
+For the picture taken in May 2009, in Berlin in the vicinity of Tiergarten. 
+PICTURES_DESTINATION\2009\05 - Tiergarten, Berlin, Germany\LGE Nexus 5\myPhoto.jpg
 2009
-	LGE Nexus 5
-		05 - Tiergarten, Berlin, Germany
+	05 - Tiergarten, Berlin, Germany
+		LGE Nexus 5
 			myPhoto.jpg
 
 If EXIF will contain Make and Model of your camera, there will be additional level (folder), in this case it was my smartphone. 
