@@ -10,8 +10,8 @@ from collections import defaultdict
 from shutil import copyfile
 
 #const
-PICTURES_SOURCE = "d:\\art\\"
-PICTURES_DESTINATION = "d:\\Destination\\"
+PICTURES_SOURCE = "c:\\art\\"
+PICTURES_DESTINATION = "c:\\Destination\\"
 HOME = (53.514546, 14.613439)
 HOME_AREA = 35
 OTHER_AREA = 15
@@ -32,6 +32,18 @@ class Picture(object):
         self.make = ""
         self.model = ""
         self.address = ""
+
+def removeDuplicates(string):
+    result = ""
+    list = string.split()
+
+    for item in list:
+        if item not in result:
+            result = result + " " + item
+
+    result = result.lstrip(' ')
+
+    return result
 
 def fromGPSToAddress(latitude, longitude):
     result = ""
@@ -59,7 +71,7 @@ def fromGPSToAddress(latitude, longitude):
 
                 #some times there is a postal code therefore attempt to remove it
                 result = ''.join(i for i in result if not i.isdigit())
-                result = result.lstrip(' ')
+                result = removeDuplicates(result)
 
                 if result != "":
                     filePath = PICTURES_DESTINATION + "pos\\" + result
