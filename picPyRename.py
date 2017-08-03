@@ -9,14 +9,11 @@ PRINT_DEBUG = True
 
 
 def main(argv):
-    picCount = 0
-
     for root, subDirs, files in os.walk(PICTURES_SOURCE):
         for fileName in files:
             fileExtension = fileName[-4:].lower()
 
             if fileExtension in {".jpg", ".mp4", ".avi", ".3gp"}:
-                picCount = picCount + 1
 
                 if PRINT_DEBUG:
                     print(root + "\\" + fileName)
