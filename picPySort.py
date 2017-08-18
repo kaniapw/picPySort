@@ -1,17 +1,17 @@
-import sys
+import datetime
+import json
 import os
+import sys
 import exifread
 import requests
-import json
-import datetime
-import calendar
-from geopy.distance import vincenty
 from collections import defaultdict
-from shutil import copyfile
+from geopy.distance import vincenty
+
+import picConst
 
 #const
-PICTURES_SOURCE = "c:\\art\\"
-PICTURES_DESTINATION = "c:\\Destination\\"
+PICTURES_SOURCE = "d:\\art\\"
+PICTURES_DESTINATION = "d:\\Destination\\"
 HOME = (53.514546, 14.613439)
 HOME_AREA = 35
 OTHER_AREA = 15
@@ -131,9 +131,17 @@ def main(argv):
 
     loadPositions()
 
+    # str = removeDuplicates("07 - İncekum Mahallesi, AlanyaAntalya, Turkey Alanya, Antalya, Turkey")
+    # print(str)
+    #
+    # pass
+
+    searchFor = picConst.PICTURES
+    searchFor += picConst.VIDEOS
+
     for root, subdirs, files in os.walk(PICTURES_SOURCE):
         for filename in files:
-            if filename[-3:].lower() in {"jpg", "mp4", "avi", "3gp"}:
+            if filename[-4:].lower() in searchFor:
 
                 picCount = picCount + 1
 
