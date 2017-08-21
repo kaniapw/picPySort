@@ -3,7 +3,7 @@ import os
 import exifread
 import datetime
 
-import picConst
+import picPyConst
 
 #const
 PICTURES_SOURCE = "d:\\art"
@@ -15,8 +15,8 @@ def main(argv):
         for fileName in files:
             fileExtension = fileName[-4:].lower()
 
-            searchFor = picConst.PICTURES
-            searchFor += picConst.VIDEOS
+            searchFor = picPyConst.PICTURES
+            searchFor += picPyConst.VIDEOS
 
             if fileExtension in searchFor:
 

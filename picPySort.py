@@ -7,7 +7,7 @@ import requests
 from collections import defaultdict
 from geopy.distance import vincenty
 
-import picConst
+import picPyConst
 
 #const
 PICTURES_SOURCE = "d:\\art\\"
@@ -136,8 +136,8 @@ def main(argv):
     #
     # pass
 
-    searchFor = picConst.PICTURES
-    searchFor += picConst.VIDEOS
+    searchFor = picPyConst.PICTURES
+    searchFor += picPyConst.VIDEOS
 
     for root, subdirs, files in os.walk(PICTURES_SOURCE):
         for filename in files:

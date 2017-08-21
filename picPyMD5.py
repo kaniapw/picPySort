@@ -4,7 +4,7 @@ import hashlib
 from collections import defaultdict
 from shutil import copyfile
 
-import picConst
+import picPyConst
 
 #const
 PICTURES_SOURCE_ONE = "w:\\"
@@ -24,8 +24,8 @@ def getMD5ForFiles(directory):
         for fileName in files:
             fileExtension = fileName[-4:].lower()
 
-            searchFor = picConst.PICTURES
-            #searchFor += picConst.VIDEOS
+            searchFor = picPyConst.PICTURES
+            #searchFor += picPyConst.VIDEOS
 
             if fileExtension in searchFor:
                 file = root + "\\" + fileName
