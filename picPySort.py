@@ -4,14 +4,15 @@ import os
 import sys
 import exifread
 import requests
+from shutil import copyfile
 from collections import defaultdict
 from geopy.distance import vincenty
 
 import picPyConst
 
 #const
-PICTURES_SOURCE = "d:\\art\\"
-PICTURES_DESTINATION = "d:\\Destination\\"
+PICTURES_SOURCE = "c:\\src\\"
+PICTURES_DESTINATION = "c:\\dst\\"
 HOME = (53.514546, 14.613439)
 HOME_AREA = 35
 OTHER_AREA = 15
@@ -222,8 +223,8 @@ def main(argv):
                 print(wholePath)
 
             try:
-                #copyfile(pic.fileNameWithPath, wholePath) #copy
-                os.rename(pic.fileNameWithPath, wholePath)  # move
+                copyfile(pic.fileNameWithPath, wholePath) #copy
+                #os.rename(pic.fileNameWithPath, wholePath)  # move
             except FileExistsError:
                 print("File :" + wholePath + " already exists!" )
 
