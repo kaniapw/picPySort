@@ -11,15 +11,15 @@ from geopy.distance import vincenty
 import picPyConst
 
 #const
-PICTURES_SOURCE = "c:\\src\\"
-PICTURES_DESTINATION = "c:\\dst\\"
+PICTURES_SOURCE = "e:\\abc2\\"
+PICTURES_DESTINATION = "e:\\Destination3\\"
 HOME = (53.514546, 14.613439)
 HOME_AREA = 35
 OTHER_AREA = 15
-REMOVE_FROM_ADDRESS = [", Poland", "Gmina", "/", "\\", "-"]
 REMOVE_FROM_MODEL = ["/", "<", ">"]
 
-GEOCODE_URL = 'http://maps.googleapis.com/maps/api/geocode/json?latlng='
+GEOCODE_URL = 'https://reverse.geocoder.api.here.com/6.2/reversegeocode.json?app_id=DWfPK1hjYRBLdNACkeQH&app_code=f90Cij5MJ38YIs_s0lbqoA&mode=retrieveAreas&prox='
+#GEOCODE_URL = 'https://reverse.geocoder.api.here.com/6.2/reversegeocode.json?app_id={YOUR_APP_ID}&app_code={YOUR_APP_CODE}&mode=retrieveAreas&prox='
 HTTP_OK = 200
 PRINT_DEBUG = False
 
@@ -56,23 +56,16 @@ def fromGPSToAddress(latitude, longitude):
             result = POSITIONS[knownPosition]
 
     if result == "":
-        response = requests.get(GEOCODE_URL + latitude + "," + longitude + "&sensor=true")
+        response = requests.get(GEOCODE_URL + latitude + "," + longitude)
 
         if HTTP_OK == response.status_code:
             data = json.loads(response.text)
-            if len(data["results"]) > 0:
+            if len(data["Response"]) > 0:
                 try:
-                    result = data["results"][1]["formatted_address"]
+                    result = data["Response"]["View"][0]["Result"][0]["Location"]["Address"]["City"]
                 except IndexError:
-                    print("No data for: " + response.text)
+                    print("Error while attempting to retrive city name")
                     POSITIONS[(latitude, longitude)] = result
-
-                for remove in REMOVE_FROM_ADDRESS:
-                    result = result.replace(remove, '')
-
-                #some times there is a postal code therefore attempt to remove it
-                result = ''.join(i for i in result if not i.isdigit())
-                result = removeDuplicates(result)
 
                 if result != "":
                     filePath = PICTURES_DESTINATION + "pos\\" + result
@@ -132,11 +125,6 @@ def main(argv):
 
     loadPositions()
 
-    # str = removeDuplicates("07 - İncekum Mahallesi, AlanyaAntalya, Turkey Alanya, Antalya, Turkey")
-    # print(str)
-    #
-    # pass
-
     searchFor = picPyConst.PICTURES
     searchFor += picPyConst.VIDEOS
 
@@ -173,6 +161,9 @@ def main(argv):
 
                 if 'Image Make' in picEXIF and 'Image Model' in picEXIF:
                     pic.make = str(picEXIF['Image Make']).rstrip(' ')
+                    if pic.make == "lge" or pic.make == "LG Electronics":
+                        pic.make = ""
+
                     pic.model = str(picEXIF['Image Model'])
                     pic.model = pic.model[0:15]
                     for remove in REMOVE_FROM_MODEL:
@@ -210,8 +201,12 @@ def main(argv):
 
             wholePath = newPath
 
-            if pic.make != "" or pic.model != "":
+            if pic.make != "" and pic.model != "":
                 wholePath = wholePath + "\\" + str(pic.make) + " " + str(pic.model)
+            elif pic.make != "":
+                wholePath = wholePath + "\\" + str(pic.make)
+            elif pic.model != "":
+               wholePath = wholePath + "\\" + str(pic.model)
 
             wholePath = wholePath + "\\" + pic.fileName
 
@@ -223,8 +218,8 @@ def main(argv):
                 print(wholePath)
 
             try:
-                copyfile(pic.fileNameWithPath, wholePath) #copy
-                #os.rename(pic.fileNameWithPath, wholePath)  # move
+                #copyfile(pic.fileNameWithPath, wholePath) #copy
+                os.rename(pic.fileNameWithPath, wholePath)  # move
             except FileExistsError:
                 print("File :" + wholePath + " already exists!" )
 
