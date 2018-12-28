@@ -11,13 +11,14 @@ from geopy.distance import vincenty
 import picPyConst
 
 #const
-PICTURES_SOURCE = "e:\\abc2\\"
-PICTURES_DESTINATION = "e:\\Destination3\\"
+PICTURES_SOURCE = "e:\\src\\"
+PICTURES_DESTINATION = "e:\\dst\\"
 HOME = (53.514546, 14.613439)
 HOME_AREA = 35
 OTHER_AREA = 15
 REMOVE_FROM_MODEL = ["/", "<", ">"]
 
+GEOCODE_URL = 'https://reverse.geocoder.api.here.com/6.2/reversegeocode.json?app_id=DWfPK1hjYRBLdNACkeQH&app_code=f90Cij5MJ38YIs_s0lbqoA&mode=retrieveAreas&prox='
 #GEOCODE_URL = 'https://reverse.geocoder.api.here.com/6.2/reversegeocode.json?app_id={YOUR_APP_ID}&app_code={YOUR_APP_CODE}&mode=retrieveAreas&prox='
 HTTP_OK = 200
 PRINT_DEBUG = False
