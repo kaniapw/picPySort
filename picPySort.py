@@ -18,8 +18,7 @@ HOME_AREA = 35
 OTHER_AREA = 15
 REMOVE_FROM_MODEL = ["/", "<", ">"]
 
-GEOCODE_URL = 'https://reverse.geocoder.api.here.com/6.2/reversegeocode.json?app_id=DWfPK1hjYRBLdNACkeQH&app_code=f90Cij5MJ38YIs_s0lbqoA&mode=retrieveAreas&prox='
-#GEOCODE_URL = 'https://reverse.geocoder.api.here.com/6.2/reversegeocode.json?app_id={YOUR_APP_ID}&app_code={YOUR_APP_CODE}&mode=retrieveAreas&prox='
+GEOCODE_URL = 'https://nominatim.openstreetmap.org/reverse?format=json&lat='
 HTTP_OK = 200
 PRINT_DEBUG = False
 
@@ -56,14 +55,20 @@ def fromGPSToAddress(latitude, longitude):
             result = POSITIONS[knownPosition]
 
     if result == "":
-        response = requests.get(GEOCODE_URL + latitude + "," + longitude)
+        response = requests.get(GEOCODE_URL + latitude + "&lon=" + longitude + "&zoom=18&addressdetails=1")
 
         if HTTP_OK == response.status_code:
             data = json.loads(response.text)
-            if len(data["Response"]) > 0:
-                try:
-                    result = data["Response"]["View"][0]["Result"][0]["Location"]["Address"]["City"]
-                except IndexError:
+            if len(data["address"]) > 0:
+                if "city" in data["address"]:
+                    result = data["address"]["city"]
+                elif "town" in data["address"]:
+                    result = data["address"]["town"]
+                elif "village" in data["address"]:
+                    result = data["address"]["village"]
+                elif "hamlet" in data["address"]:
+                    result = data["address"]["hamlet"]
+                else:
                     print("Error while attempting to retrive city name")
                     POSITIONS[(latitude, longitude)] = result
 
@@ -97,7 +102,7 @@ def convertToDegress(coordinate, direction):
 
     result = d + (m / 60.0) + (s / 3600.0)
 
-    if direction == 'S' or direction == 'W':
+    if direction.values == 'S' or direction.values == 'W':
         result = 0 - result
 
     return str(result)
